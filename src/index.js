@@ -1,3 +1,4 @@
+
 import initGame from './lib/game';
 import Highscore from './lib/highscore';
 

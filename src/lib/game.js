@@ -1,22 +1,31 @@
 // todo vísa í rétta hluti með import
-
+import question from './question';
 // allar breytur hér eru aðeins sýnilegar innan þessa módúl
-
-let startButton; // takki sem byrjar leik
-let problem; // element sem heldur utan um verkefni, sjá index.html
-let result; // element sem heldur utan um niðurstöðu, sjá index.html
-
+let startButton = document.querySelector('.start'); // takki sem byrjar leik
+let problem = document.querySelector('.problem'); // element sem heldur utan um verkefni, sjá index.html
+let result = document.querySelector('.result'); // element sem heldur utan um niðurstöðu, sjá index.html
 let playTime; // hversu lengi á að spila? Sent inn gegnum init()
 let total = 0; // fjöldi spurninga í núverandi leik
 let correct = 0; // fjöldi réttra svara í núverandi leik
 let currentProblem; // spurning sem er verið að sýna
+let timer = document.querySelector('.problem__timer');
+let problemform = document.querySelector('.problem__answer');
+let problemInput = document.querySelector('.problem__input');
+let textcontent = document.querySelector('.result__text');
 
 /**
  * Klárar leik. Birtir result og felur problem. Reiknar stig og birtir í result.
  */
-function finish() {
-  const text = `Þú svaraðir ${correct} rétt af ${total} spurningum og fékkst ${points} stig fyrir. Skráðu þig á stigatöfluna!`;
 
+
+function finish() {
+  let points = Math.round(((Math.pow((correct / total),2) + correct) * total) / playTime)*100;
+  let pre = document.createElement("span");
+  const text = `Þú svaraðir ${correct} rétt af ${total} spurningum og fékkst ${points} stig fyrir. Skráðu þig á stigatöfluna!`;
+  pre.appendChild(document.createTextNode(text));
+  textcontent.appendChild(pre);
+  problem.classList.add('problem--hidden');
+  result.classList.remove('result--hidden');
   // todo útfæra
 }
 
@@ -32,20 +41,38 @@ function finish() {
  */
 function tick(current) {
   // todo uppfæra tíma á síðu
-
-  if (current <= 0) {
-    return finish();
+  
+  if(timer.firstChild) {
+    timer.removeChild(timer.firstChild);
   }
-
-  return () => {
-    setTimeout(tick(current - 1), 1000);
-  };
+  console.log(playTime);
+  timer.appendChild(document.createTextNode(current));
+  setTimeout(() => {
+    if (current <= 1) {
+      timer.removeChild(timer.firstChild);
+      return finish();
+    }
+    return tick(current-1);
+  },1000);
+ 
 }
+
 
 /**
  * Býr til nýja spurningu og sýnir undir .problem__question
  */
 function showQuestion() {
+  let prob__question = problem.querySelector('.problem__question');
+  currentProblem = new question();
+  total++;
+  console.log(currentProblem);
+  if(prob__question.firstChild){
+    prob__question.removeChild(prob__question.firstChild);
+  }
+  let span = document.createElement('span');
+  span.appendChild(document.createTextNode(currentProblem.problem))
+  prob__question.appendChild(span);
+
   // todo útfæra
 }
 
@@ -58,7 +85,10 @@ function showQuestion() {
  * - Sýnir fyrstu spurningu
  */
 function start() {
-  // todo útfæra
+ tick(playTime);
+ showQuestion();
+  problem.classList.remove('problem--hidden');
+  startButton.classList.add('button--hidden');
 }
 
 /**
@@ -69,10 +99,15 @@ function start() {
  */
 function onSubmit(e) {
   e.preventDefault();
-
-  // todo útfæra
-
-  showQuestion();
+  if(problemInput.value.trim() !== ""){
+    if(parseInt(problemInput.value) === currentProblem.answer){
+      correct++;
+      console.log("NÆNSLJAKFSLJAJ");
+    }
+    // todo útfæra
+    showQuestion();
+    problemInput.value = "";
+    }
 }
 
 /**
@@ -97,6 +132,8 @@ function onSubmitScore(e) {
  */
 export default function init(_playTime) {
   playTime = _playTime;
-
+  startButton = document.querySelector('.start');
+  startButton.addEventListener('click', start);
+  problemform.addEventListener('submit',onSubmit);
   // todo útfæra
 }
