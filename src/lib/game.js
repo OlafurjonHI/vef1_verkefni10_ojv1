@@ -1,5 +1,8 @@
 // todo vísa í rétta hluti með import
 import question from './question';
+import Highscore from './highscore';
+import {score as calcPoints} from './highscore';
+import {save as saveData} from './storage.js';
 // allar breytur hér eru aðeins sýnilegar innan þessa módúl
 let startButton = document.querySelector('.start'); // takki sem byrjar leik
 let problem = document.querySelector('.problem'); // element sem heldur utan um verkefni, sjá index.html
@@ -12,16 +15,29 @@ let timer = document.querySelector('.problem__timer');
 let problemform = document.querySelector('.problem__answer');
 let problemInput = document.querySelector('.problem__input');
 let textcontent = document.querySelector('.result__text');
-
+let nameInput = document.querySelector('.result__input');
+let resultForm = document.querySelector('.result__form');
+let points;
+const hs = new Highscore();
 /**
  * Klárar leik. Birtir result og felur problem. Reiknar stig og birtir í result.
  */
 
+ function nullStillaLeik(){
+  total = 0;
+  correct = 0;
+  points = 0;
+  nameInput.value = "";
+ }
+
 
 function finish() {
-  let points = Math.round(((Math.pow((correct / total),2) + correct) * total) / playTime)*100;
+  while(textcontent.firstChild){
+    textcontent.removeChild(textcontent.firstChild);
+  }
+  points = calcPoints(total,correct,playTime);
   let pre = document.createElement("span");
-  const text = `Þú svaraðir ${correct} rétt af ${total} spurningum og fékkst ${points} stig fyrir. Skráðu þig á stigatöfluna!`;
+  const text = `Þú svaraðir ${correct} rétt af ${total-1} spurningum og fékkst ${points} stig fyrir. Skráðu þig á stigatöfluna!`;
   pre.appendChild(document.createTextNode(text));
   textcontent.appendChild(pre);
   problem.classList.add('problem--hidden');
@@ -45,7 +61,6 @@ function tick(current) {
   if(timer.firstChild) {
     timer.removeChild(timer.firstChild);
   }
-  console.log(playTime);
   timer.appendChild(document.createTextNode(current));
   setTimeout(() => {
     if (current <= 1) {
@@ -85,6 +100,7 @@ function showQuestion() {
  * - Sýnir fyrstu spurningu
  */
 function start() {
+  nullStillaLeik();
  tick(playTime);
  showQuestion();
   problem.classList.remove('problem--hidden');
@@ -102,7 +118,6 @@ function onSubmit(e) {
   if(problemInput.value.trim() !== ""){
     if(parseInt(problemInput.value) === currentProblem.answer){
       correct++;
-      console.log("NÆNSLJAKFSLJAJ");
     }
     // todo útfæra
     showQuestion();
@@ -117,7 +132,14 @@ function onSubmit(e) {
  */
 function onSubmitScore(e) {
   e.preventDefault();
-
+  let name = nameInput.value;
+  if(name.trim() !== ""){
+    saveData(name,points); 
+    hs.load();
+  }
+  nameInput.value = "";
+  problemInput.value = "";
+  
   // todo útfæra
 
   result.classList.add('result--hidden');
@@ -135,5 +157,6 @@ export default function init(_playTime) {
   startButton = document.querySelector('.start');
   startButton.addEventListener('click', start);
   problemform.addEventListener('submit',onSubmit);
+  resultForm.addEventListener('submit',onSubmitScore);
   // todo útfæra
 }
