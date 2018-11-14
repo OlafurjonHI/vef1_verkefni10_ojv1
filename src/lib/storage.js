@@ -30,26 +30,21 @@ export function load() {
  */
 export function save(name, points) {
 	  let data = [{name,points}];
-	  const game_Scores = window.localStorage.getItem(LOCALSTORAGE_KEY);
+	  const game_Scores = localStorage.getItem(LOCALSTORAGE_KEY);
 	  console.log("game_Scores" + game_Scores);
 	  if(game_Scores){
 	  	data = JSON.parse(addToJSON(game_Scores,JSON.stringify(data)));
 	  	console.log(data);
 	  }
-	  
-	  let json = JSON.stringify(data);
-	  console.log("Jason:" + json);
-	  localStorage.setItem(LOCALSTORAGE_KEY,json);
 
-  //console.log(parsed);
-  //console.log(json);  
- 
+	  localStorage.setItem(LOCALSTORAGE_KEY,JSON.stringify(data));
 }
 
 function addToJSON(olddata,newdata){
   let oldstring = olddata.substring(0,olddata.length-1);
   let newstring = newdata.substring(1,newdata.length-1);
   let jsonfy = `${oldstring},${newstring}]`;
+  console.log(jsonfy);
   return jsonfy;
 }
 /**

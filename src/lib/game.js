@@ -132,9 +132,11 @@ function onSubmit(e) {
  */
 function onSubmitScore(e) {
   e.preventDefault();
+  e.stopPropagation();
   let name = nameInput.value;
   if(name.trim() !== ""){
-    saveData(name,points); 
+    saveData(name,points);
+    console.log("veisla"); 
     hs.load();
   }
   nameInput.value = "";
