@@ -37,7 +37,7 @@ function finish() {
   }
   points = calcPoints(total,correct,playTime);
   let pre = document.createElement("span");
-  const text = `Þú svaraðir ${correct} rétt af ${total-1} spurningum og fékkst ${points} stig fyrir. Skráðu þig á stigatöfluna!`;
+  const text = `Þú svaraðir ${correct} rétt af ${total} spurningum og fékkst ${points} stig fyrir. Skráðu þig á stigatöfluna!`;
   pre.appendChild(document.createTextNode(text));
   textcontent.appendChild(pre);
   problem.classList.add('problem--hidden');
@@ -100,6 +100,7 @@ function showQuestion() {
  * - Sýnir fyrstu spurningu
  */
 function start() {
+
   nullStillaLeik();
  tick(playTime);
  showQuestion();

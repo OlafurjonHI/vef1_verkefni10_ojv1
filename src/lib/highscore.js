@@ -23,6 +23,19 @@ export function score(total, correct, time) {
   return number;
 }
 
+function sortByScore(data){
+  for (let i = 0; i < data.length; i++) {
+    for (let k = data.length-1; k > 0 ; k--) {
+      if(data[k-1].points < data[k].points){
+        let temp = data[k-1];
+        data[k-1] = data[k];
+        data[k] = temp;
+      }
+    }
+  }
+return data;
+}
+
 /**
  * Útbúa stigatöflu, sækir gögn í gegnum storage.js
  */
@@ -41,7 +54,7 @@ export default class Highscore {
     // todo útfæra
 
     let data = getData();
-    console.log(data);
+    data = sortByScore(data);
     if(data.length !== 0){
       while(this.scores.firstChild){
       this.scores.removeChild(this.scores.firstChild);
@@ -62,8 +75,7 @@ export default class Highscore {
         ol.appendChild(li);
       }
     this.scores.appendChild(ol);
-
-    console.log(data.length);      
+      
     }
     else{
       this.button.classList.add('highscore__button--hidden');
