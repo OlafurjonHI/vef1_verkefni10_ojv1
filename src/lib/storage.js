@@ -11,15 +11,20 @@ const LOCALSTORAGE_KEY = 'calc_game_scores';
  *
  * @returns {array} Raðað fylki af svörum eða tóma fylkið ef ekkert vistað.
  */
+function addToJSON(olddata, newdata) {
+  const oldstring = olddata.substring(0, olddata.length - 1);
+  const newstring = newdata.substring(1, newdata.length - 1);
+  const jsonfy = `${oldstring},${newstring}]`;
+  return jsonfy;
+}
+
 export function load() {
-	//clear();
-    const game_Scores = window.localStorage.getItem(LOCALSTORAGE_KEY);
-    
-    if (game_Scores) {
-      let parsed = JSON.parse(game_Scores);
-  		return parsed;
-    }
-    return [];
+  const gameScores = window.localStorage.getItem(LOCALSTORAGE_KEY);
+  if (gameScores) {
+    const parsed = JSON.parse(gameScores);
+    return parsed;
+  }
+  return [];
 }
 
 /**
@@ -29,24 +34,15 @@ export function load() {
  * @param {number} points Stig sem á að vista
  */
 export function save(name, points) {
-	  let data = [{name,points}];
-	  const game_Scores = localStorage.getItem(LOCALSTORAGE_KEY);
-	  console.log("game_Scores" + game_Scores);
-	  if(game_Scores){
-	  	data = JSON.parse(addToJSON(game_Scores,JSON.stringify(data)));
-	  	console.log(data);
-	  }
-
-	  localStorage.setItem(LOCALSTORAGE_KEY,JSON.stringify(data));
+  let data = [{ name, points }];
+  const gameScores = localStorage.getItem(LOCALSTORAGE_KEY);
+  if (gameScores) {
+    data = JSON.parse(addToJSON(gameScores, JSON.stringify(data)));
+  }
+  localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
 }
 
-function addToJSON(olddata,newdata){
-  let oldstring = olddata.substring(0,olddata.length-1);
-  let newstring = newdata.substring(1,newdata.length-1);
-  let jsonfy = `${oldstring},${newstring}]`;
-  console.log(jsonfy);
-  return jsonfy;
-}
+
 /**
  * Hreinsa öll stig úr localStorage
  */

@@ -1,6 +1,6 @@
 // todo vísa í rétta hluti með import
-import {load as getData} from './storage.js';
-import {clear as deleteData} from './storage.js';
+import { load as getData } from './storage'; /*eslint-disable-line*/
+import { clear as deleteData } from './storage'; /*eslint-disable-line*/
 
 /**
  * Reikna út stig fyrir svör út frá heildarfjölda svarað á tíma.
@@ -15,25 +15,24 @@ import {clear as deleteData} from './storage.js';
  */
 export function score(total, correct, time) {
   // todo útfæra
-  total = total-1;
-  let number = Math.round(((Math.pow((correct / total),2) + correct) * total) / time)*100;
-  if(isNaN(number)){
+  let number = Math.round(((((correct / total - 1) ** 2) + correct) * total - 1) / time) * 100;
+  if (isNaN(number) || number < 0) { /*eslint-disable-line*/
     number = 0;
   }
   return number;
 }
 
-function sortByScore(data){
-  for (let i = 0; i < data.length; i++) {
-    for (let k = data.length-1; k > 0 ; k--) {
-      if(data[k-1].points < data[k].points){
-        let temp = data[k-1];
-        data[k-1] = data[k];
-        data[k] = temp;
+function sortByScore(data) {
+  for (let i = 0; i < data.length; i += 1) {
+    for (let k = data.length - 1; k > 0; k -= 1) {
+      if (data[k - 1].points < data[k].points) {
+        const temp = data[k - 1];
+        data[k - 1] = data[k]; /*eslint-disable-line*/
+        data[k] = temp; /*eslint-disable-line*/
       }
     }
   }
-return data;
+  return data;
 }
 
 /**
@@ -55,57 +54,52 @@ export default class Highscore {
 
     let data = getData();
     data = sortByScore(data);
-    if(data.length !== 0){
-      while(this.scores.firstChild){
-      this.scores.removeChild(this.scores.firstChild);
+    if (data.length !== 0) {
+      while (this.scores.firstChild) {
+        this.scores.removeChild(this.scores.firstChild);
       }
       this.button.classList.remove('highscore__button--hidden');
       data = Object.values(data);
-      let ol = document.createElement('ol');
-      for(let i = 0; i < data.length; i++) {
-        let li = document.createElement('li')
-        let span = document.createElement('span');
+      const ol = document.createElement('ol');
+      for (let i = 0; i < data.length; i += 1) {
+        const li = document.createElement('li');
+        const span = document.createElement('span');
         span.classList.add('highscore__number');
         span.appendChild(document.createTextNode(`${data[i].points} stig `));
-        let namespan = document.createElement('span');
+        const namespan = document.createElement('span');
         namespan.appendChild(document.createTextNode(`${data[i].name}`));
         namespan.classList.add('highscore__name');
         li.appendChild(span);
         li.appendChild(namespan);
         ol.appendChild(li);
       }
-    this.scores.appendChild(ol);
-      
-    }
-    else{
+      this.scores.appendChild(ol);
+    } else {
       this.button.classList.add('highscore__button--hidden');
     }
-
-
-}
-
+  }
   /**
    * Hreinsa allar færslur úr stigatöflu, tengt við takka .highscore__button
    */
+
   clear() {
     deleteData();
-    while(this.scores.firstChild){
+    while (this.scores.firstChild) {
       this.scores.removeChild(this.scores.firstChild);
     }
     this.button.classList.add('highscore__button--hidden');
-    let text = 'Engin stig skráð';
-    let p = document.createElement("p");
+    const text = 'Engin stig skráð';
+    const p = document.createElement('p');
     p.appendChild(document.createTextNode(text));
     this.scores.appendChild(p);
-    }
+  }
 
   /**
    * Hlaða inn stigatöflu fyrir gefin gögn.
    *
    * @param {array} data Fylki af færslum í stigatöflu
    */
-  highscore(data) {
-    //this.load();
-
+  highscore() {
+    this.load();
   }
 }

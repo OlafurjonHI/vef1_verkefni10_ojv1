@@ -1,42 +1,46 @@
 // todo vísa í rétta hluti með import
-import question from './question';
-import Highscore from './highscore';
-import {score as calcPoints} from './highscore';
-import {save as saveData} from './storage.js';
+import Question from './question';
+import Highscore from './highscore'; /*eslint-disable-line*/
+import { score as calcPoints } from './highscore'; /*eslint-disable-line*/
+import { save as saveData } from './storage';
 // allar breytur hér eru aðeins sýnilegar innan þessa módúl
 let startButton = document.querySelector('.start'); // takki sem byrjar leik
-let problem = document.querySelector('.problem'); // element sem heldur utan um verkefni, sjá index.html
-let result = document.querySelector('.result'); // element sem heldur utan um niðurstöðu, sjá index.html
+const problem = document.querySelector('.problem'); // element sem heldur utan um verkefni, sjá index.html
+const result = document.querySelector('.result'); // element sem heldur utan um niðurstöðu, sjá index.html
 let playTime; // hversu lengi á að spila? Sent inn gegnum init()
 let total = 0; // fjöldi spurninga í núverandi leik
 let correct = 0; // fjöldi réttra svara í núverandi leik
 let currentProblem; // spurning sem er verið að sýna
-let timer = document.querySelector('.problem__timer');
-let problemform = document.querySelector('.problem__answer');
-let problemInput = document.querySelector('.problem__input');
-let textcontent = document.querySelector('.result__text');
-let nameInput = document.querySelector('.result__input');
-let resultForm = document.querySelector('.result__form');
+const timer = document.querySelector('.problem__timer');
+const problemform = document.querySelector('.problem__answer');
+const problemInput = document.querySelector('.problem__input');
+const textcontent = document.querySelector('.result__text');
+const nameInput = document.querySelector('.result__input');
+const resultForm = document.querySelector('.result__form');
 let points;
 const hs = new Highscore();
 /**
  * Klárar leik. Birtir result og felur problem. Reiknar stig og birtir í result.
  */
 
- function nullStillaLeik(){
+function nullStillaLeik() {
   total = 0;
   correct = 0;
   points = 0;
-  nameInput.value = "";
- }
+  nameInput.value = '';
+}
 
 
 function finish() {
-  while(textcontent.firstChild){
+  while (textcontent.firstChild) {
     textcontent.removeChild(textcontent.firstChild);
   }
-  points = calcPoints(total,correct,playTime);
-  let pre = document.createElement("span");
+  if (correct === 0) {
+    points = 0;
+  } else {
+    points = calcPoints(total, correct, playTime);
+  }
+  const pre = document.createElement('span');
   const text = `Þú svaraðir ${correct} rétt af ${total} spurningum og fékkst ${points} stig fyrir. Skráðu þig á stigatöfluna!`;
   pre.appendChild(document.createTextNode(text));
   textcontent.appendChild(pre);
@@ -57,8 +61,7 @@ function finish() {
  */
 function tick(current) {
   // todo uppfæra tíma á síðu
-  
-  if(timer.firstChild) {
+  if (timer.firstChild) {
     timer.removeChild(timer.firstChild);
   }
   timer.appendChild(document.createTextNode(current));
@@ -67,30 +70,25 @@ function tick(current) {
       timer.removeChild(timer.firstChild);
       return finish();
     }
-    return tick(current-1);
-  },1000);
- 
+    return tick(current - 1);
+  }, 1000);
 }
-
-
 /**
  * Býr til nýja spurningu og sýnir undir .problem__question
  */
 function showQuestion() {
-  let prob__question = problem.querySelector('.problem__question');
-  currentProblem = new question();
-  total++;
-  console.log(currentProblem);
-  if(prob__question.firstChild){
-    prob__question.removeChild(prob__question.firstChild);
+  const probQuestion = problem.querySelector('.problem__question');
+  currentProblem = new Question();
+  total += 1;
+  if (probQuestion.firstChild) {
+    probQuestion.removeChild(probQuestion.firstChild);
   }
-  let span = document.createElement('span');
-  span.appendChild(document.createTextNode(currentProblem.problem))
-  prob__question.appendChild(span);
+  const span = document.createElement('span');
+  span.appendChild(document.createTextNode(currentProblem.problem));
+  probQuestion.appendChild(span);
 
   // todo útfæra
 }
-
 /**
  * Byrjar leik
  *
@@ -100,10 +98,9 @@ function showQuestion() {
  * - Sýnir fyrstu spurningu
  */
 function start() {
-
   nullStillaLeik();
- tick(playTime);
- showQuestion();
+  tick(playTime);
+  showQuestion();
   problem.classList.remove('problem--hidden');
   startButton.classList.add('button--hidden');
 }
@@ -116,14 +113,14 @@ function start() {
  */
 function onSubmit(e) {
   e.preventDefault();
-  if(problemInput.value.trim() !== ""){
-    if(parseInt(problemInput.value) === currentProblem.answer){
-      correct++;
+  if (problemInput.value.trim() !== '') {
+    if (parseInt(problemInput.value, 10) === currentProblem.answer) {
+      correct += 1;
     }
     // todo útfæra
     showQuestion();
-    problemInput.value = "";
-    }
+    problemInput.value = '';
+  }
 }
 
 /**
@@ -134,15 +131,14 @@ function onSubmit(e) {
 function onSubmitScore(e) {
   e.preventDefault();
   e.stopPropagation();
-  let name = nameInput.value;
-  if(name.trim() !== ""){
-    saveData(name,points);
-    console.log("veisla"); 
+  const name = nameInput.value;
+  if (name.trim() !== '') {
+    saveData(name, points);
     hs.load();
   }
-  nameInput.value = "";
-  problemInput.value = "";
-  
+  nameInput.value = '';
+  problemInput.value = '';
+
   // todo útfæra
 
   result.classList.add('result--hidden');
@@ -159,7 +155,7 @@ export default function init(_playTime) {
   playTime = _playTime;
   startButton = document.querySelector('.start');
   startButton.addEventListener('click', start);
-  problemform.addEventListener('submit',onSubmit);
-  resultForm.addEventListener('submit',onSubmitScore);
+  problemform.addEventListener('submit', onSubmit);
+  resultForm.addEventListener('submit', onSubmitScore);
   // todo útfæra
 }
