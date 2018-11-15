@@ -16,7 +16,7 @@ import { clear as deleteData } from './storage'; /*eslint-disable-line*/
 export function score(total, correct, time) {
   // todo útfæra
   let number = Math.round(((((correct / total - 1) ** 2) + correct) * total - 1) / time) * 100;
-  if (isNaN(number) || number < 0) { /*eslint-disable-line*/
+  if (isNaN(number) || correct === 0) { /*eslint-disable-line*/
     number = 0;
   }
   return number;
